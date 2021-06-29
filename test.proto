@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package pbrpc;
-
-message test{
-    string a = 1;
-    int32 b =2;
-}
