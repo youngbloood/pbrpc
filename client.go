@@ -3,14 +3,12 @@ package pbrpc
 import (
 	"bufio"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/rpc"
 	"sync"
 
 	msg "github.com/youngbloood/pbrpc/internal"
-
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 type clientCodec struct {
@@ -59,7 +57,7 @@ func (c *clientCodec) WriteRequest(r *rpc.Request, param interface{}) (err error
 	if err != nil {
 		return
 	}
-	c.enc.Write(bts)
+	_, err = c.enc.Write(bts)
 	return
 }
 
@@ -67,7 +65,7 @@ func (c *clientCodec) ReadResponseHeader(r *rpc.Response) (err error) {
 	c.resp.Reset()
 
 	var bts []byte
-	bts, err = ioutil.ReadAll(c.dec)
+	bts, err = io.ReadAll(c.dec)
 	if err != nil {
 		return
 	}

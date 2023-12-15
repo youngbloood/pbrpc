@@ -4,12 +4,11 @@ import (
 	"bufio"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/rpc"
 	"sync"
 
-	"github.com/golang/protobuf/proto"
 	msg "github.com/youngbloood/pbrpc/internal"
+	"google.golang.org/protobuf/proto"
 )
 
 type serverCodec struct {
@@ -39,11 +38,13 @@ func NewServerCodec(conn io.ReadWriteCloser) rpc.ServerCodec {
 
 func (s *serverCodec) ReadRequestHeader(r *rpc.Request) error {
 	s.req.Reset()
-	bts, err := ioutil.ReadAll(s.dec)
+	bts, err := io.ReadAll(s.dec)
 	if err != nil {
 		return err
 	}
-	proto.Unmarshal(bts, s.req)
+	if err = proto.Unmarshal(bts, s.req); err != nil {
+		return err
+	}
 	r.ServiceMethod = s.req.Method
 
 	s.mutex.Lock()
